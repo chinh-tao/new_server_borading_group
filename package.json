@@ -1,0 +1,34 @@
+{
+  "name": "new_server_bg",
+  "version": "1.0.0",
+  "description": "new server boarding group",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chinh-tao/new_server_borading_group.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/chinh-tao/new_server_borading_group/issues"
+  },
+  "homepage": "https://github.com/chinh-tao/new_server_borading_group#readme",
+  "dependencies": {
+    "@google-cloud/storage": "^6.6.0",
+    "express": "^4.18.2",
+    "firebase-admin": "^11.2.0",
+    "formidable": "^2.0.1",
+    "mongodb": "^4.11.0",
+    "nodemailer": "^6.8.0",
+    "pug": "^3.0.2",
+    "randexp": "^0.5.3",
+    "randomstring": "^1.2.3"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  }
+}
