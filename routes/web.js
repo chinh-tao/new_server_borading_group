@@ -7,6 +7,7 @@ var href = ['','/web/forgot-pass'];
 var titleElement = ['','Quên mật khẩu'];
 
 //method GET
+router.get('/infor-admin', controller.getAdmin);
 // router.get('/',(req,res)=>{
 //     href[0] = '/web/register';
 //     titleElement[0] = 'Đăng ký';

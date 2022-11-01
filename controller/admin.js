@@ -65,3 +65,17 @@ exports.login = async (req,res,next)=>{
         return res.json(Utils.dataErr);
     }
 }
+
+exports.getAdmin = async (req,res)=>{
+    try{
+        let data = await AdminModel.find({idBranch: req.query.id},{_id: 0, pass: 0}).toArray();
+        return res.json({
+            code: 0,
+            message: "Lấy thông tin thành công!",
+            payload: data[0]
+        });
+    }catch(err){
+        console.log(err);
+        return res.json(Utils.dataErr);
+    }
+}
