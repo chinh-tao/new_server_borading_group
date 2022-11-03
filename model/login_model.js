@@ -14,6 +14,10 @@ class LoginModel {
     static findOne(condition = {}) {
         return db.collection('Login').findOne(condition);
     }
+
+    static deleteOne(condition = {}){
+        return db.collection('Login').deleteOne(condition);
+    }
 }
 
 module.exports = LoginModel;

@@ -243,7 +243,7 @@ exports.forgotPass = async (req, res) => {
 exports.removeAccount = async (req, res) => {
     const { email, device_mobi } = req.body;
     try {
-        await UserModel.deleteOne({
+        await LoginModel.deleteOne({
             email: email,
             deviceMobi: device_mobi
         });

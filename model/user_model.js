@@ -13,6 +13,20 @@ class UserModel {
         this.idBranch = idBranch;
     }
 
+    insertUser(){
+        var form = {
+            id: this.id,
+            email: null,
+            userName: this.userName,
+            pass: null,
+            deviceMobi: null,
+            images: null,
+            roomNumber: this.roomNumber,
+            idBranch: this.idBranch
+        };
+        return db.collection('User').insertOne(form);
+    }
+
     updateOne(){
         var form = {};
         if(this.email){
@@ -30,12 +44,12 @@ class UserModel {
         return db.collection('User').updateOne({id: this.id},{$set: form});
     }
 
-    static deleteOne(condition = {}){
-        return db.collection('Login').deleteOne(condition);
-    }
-
     static findOne(condition = {}) {
         return db.collection('User').findOne(condition);
+    }
+
+    static find(condition = {}, project = {}) {
+        return db.collection('User').find(condition).project(project);
     }
 
     static findJoin(device){

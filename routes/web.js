@@ -36,7 +36,7 @@ router.get('/infor-admin', controller.getAdmin);
 
 //method POST
 router.post('/login', controller.login);
-// router.post('/register', controller.register);
 router.post('/forgot-pass', controller.forgotPass);
+router.post('/add-user', controller.addUser);
 
 module.exports = router;

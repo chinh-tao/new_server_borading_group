@@ -6,6 +6,7 @@ const db = client.db();
 
 const Utils = require('../common/utils');
 const AdminModel = require('../model/admin_model');
+const UserModel = require('../model/user_model');
 const RandExp = require('randexp');
 const randomPass = new RandExp(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])[a-zA-Z0-9$@!%*?&#^+=-_]{8}$/);
 
@@ -17,7 +18,7 @@ exports.forgotPass = async (req, res) => {
         });
         if (checkEmail === null) {
             return res.json({
-                code: 501,
+                code: 400,
                 message: "Địa chỉ email chưa được đăng ký.",
                 payload: null
             });
@@ -27,7 +28,7 @@ exports.forgotPass = async (req, res) => {
             model.email = checkEmail['email'];
             model.pass = password;
             await model.updateOne();
-            Utils.sendMail(email,password);
+            Utils.sendMail(email, password);
             return res.json({
                 code: 0,
                 message: "Đặt lại mật khẩu thành công!",
@@ -40,41 +41,83 @@ exports.forgotPass = async (req, res) => {
     }
 }
 
-exports.login = async (req,res,next)=>{
+exports.login = async (req, res, next) => {
     const { email, pass } = req.body;
-    try{
+    try {
         let checkAccount = await AdminModel.find({
             email: email,
             pass: pass
-        },{_id: 0, pass: 0}).toArray();
-        if(checkAccount.length === 0){
+        }, { _id: 0, pass: 0 }).toArray();
+        if (checkAccount.length === 0) {
             return res.json({
-                code: 501,
+                code: 400,
                 message: 'Thông tin người dùng không tồn tại.',
                 payload: null
             });
-        }else{
+        } else {
             return res.json({
                 code: 0,
                 message: 'Đăng nhập thành công!',
                 payload: checkAccount[0]
             });
         }
-    }catch(err){
+    } catch (err) {
         console.log(err);
         return res.json(Utils.dataErr);
     }
 }
 
-exports.getAdmin = async (req,res)=>{
-    try{
-        let data = await AdminModel.find({idBranch: req.query.id},{_id: 0, pass: 0}).toArray();
+exports.getAdmin = async (req, res) => {
+    try {
+        let data = await AdminModel.find({ idBranch: req.query.id }, { _id: 0, pass: 0 }).toArray();
         return res.json({
             code: 0,
             message: "Lấy thông tin thành công!",
             payload: data[0]
         });
-    }catch(err){
+    } catch (err) {
+        console.log(err);
+        return res.json(Utils.dataErr);
+    }
+}
+
+exports.addUser = async (req, res) => {
+    try {
+        const {id_user, name_user, user_room, id_branch} = req.body;
+        if(![id_user, name_user, user_room, id_branch].includes('')){
+            const model = new UserModel();
+            model.id = id_user;
+            model.userName = name_user;
+            model.roomNumber = user_room;
+            model.idBranch = id_branch;
+            model.insertUser();
+            const dataUser = await UserModel.find({idBranch: model.idBranch},{ _id: 0, pass: 0 }).toArray();
+            return res.json({
+                code: 0,
+                message: "Thêm thành viên thành công!",
+                payload: dataUser
+            });
+        }else{
+            var form = {idBranch: id_branch};
+            if(id_user != '') form['id'] = id_user;
+            if(name_user != '') form['userName'] = name_user;
+            if(user_room != '') form['roomNumber'] = user_room;
+            const dataUser = await UserModel.find(form,{ _id: 0, pass: 0 }).toArray();
+            if(dataUser.length == 0){
+                return res.json({
+                    code: 400,
+                    message: "Không tìm thấy thành viên yêu cầu.",
+                    payload: null
+                });
+            }else{
+                return res.json({
+                    code: 0,
+                    message: "Tìm kiếm thành viên thành công!",
+                    payload: dataUser
+                });
+            }
+        }
+    } catch (err) {
         console.log(err);
         return res.json(Utils.dataErr);
     }
