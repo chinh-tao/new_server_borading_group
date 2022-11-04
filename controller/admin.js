@@ -83,36 +83,43 @@ exports.getAdmin = async (req, res) => {
 
 exports.addUser = async (req, res) => {
     try {
-        const {id_user, name_user, user_room, id_branch} = req.body;
-        if(![id_user, name_user, user_room, id_branch].includes('')){
+        const { id_user, name_user, user_room, phone_user, id_branch } = req.body;
+        var id, name, phone = null;
+        if (id_user != '') id = await UserModel.findOne({id: {$regex: `^.*${id_user}.*$`, $options: 'i'}});
+        if (name_user != '') name = await UserModel.findOne({userName: {$regex: `^.*${name_user}.*$`, $options: 'i'}});
+        if (phone_user != '') phone = await UserModel.findOne({phone: {$regex: `^.*${phone_user}.*$`, $options: 'i'}});
+        
+        if (![id_user, name_user, user_room].includes('') && id === null && name === null && phone === null) {
             const model = new UserModel();
             model.id = id_user;
             model.userName = name_user;
+            model.phone = phone_user;
             model.roomNumber = user_room;
             model.idBranch = id_branch;
-            model.insertUser();
-            const dataUser = await UserModel.find({idBranch: model.idBranch},{ _id: 0, pass: 0 }).toArray();
+            await model.insertUser();
+            const dataUser = await UserModel.find({ idBranch: model.idBranch }, { _id: 0, pass: 0 }).toArray();
             return res.json({
                 code: 0,
-                message: "Thêm thành viên thành công!",
+                message: "Đã thêm thanh viên mới vào chi nhánh!",
                 payload: dataUser
             });
         }else{
-            var form = {idBranch: id_branch};
-            if(id_user != '') form['id'] = id_user;
-            if(name_user != '') form['userName'] = name_user;
-            if(user_room != '') form['roomNumber'] = user_room;
-            const dataUser = await UserModel.find(form,{ _id: 0, pass: 0 }).toArray();
-            if(dataUser.length == 0){
+            var condition = { idBranch: id_branch };
+            if (id_user != '') condition['id'] = {$regex: `^.*${id_user}.*$`, $options: 'i'};
+            if (name_user != '') condition['userName'] = {$regex: `^.*${name_user}.*$`, $options: 'i'};
+            if (user_room != '') condition['roomNumber'] = {$regex: `^.*${user_room}.*$`, $options: 'i'};
+            if (phone_user != '') condition['phone'] = {$regex: `^.*${phone_user}.*$`, $options: 'i'};
+            const dataUser = await UserModel.find(condition, { _id: 0, pass: 0 }).toArray();
+            if (dataUser.length == 0) {
                 return res.json({
                     code: 400,
-                    message: "Không tìm thấy thành viên yêu cầu.",
+                    message: "Không tìm thấy thành viên phù hợp với yêu cầu.",
                     payload: null
                 });
-            }else{
+            } else {
                 return res.json({
                     code: 0,
-                    message: "Tìm kiếm thành viên thành công!",
+                    message: "Đã tìm thấy thành viên phù hợp với yêu cầu!",
                     payload: dataUser
                 });
             }

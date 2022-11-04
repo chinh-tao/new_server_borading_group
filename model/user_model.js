@@ -2,7 +2,7 @@ const client = require('../common/database').client;
 const db = client.db();
 
 class UserModel {
-    constructor(id, email, userName, pass, deviceMobi, images, roomNumber, idBranch) {
+    constructor(id, email, userName, pass, deviceMobi, images, roomNumber, phone, idBranch) {
         this.id = id;
         this.email = email;
         this.userName = userName;
@@ -10,6 +10,7 @@ class UserModel {
         this.deviceMobi = deviceMobi;
         this.images = images;
         this.roomNumber = roomNumber;
+        this.phone = phone;
         this.idBranch = idBranch;
     }
 
@@ -17,6 +18,7 @@ class UserModel {
         var form = {
             id: this.id,
             email: null,
+            phone: this.phone,
             userName: this.userName,
             pass: null,
             deviceMobi: null,
