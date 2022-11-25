@@ -85,11 +85,11 @@ exports.addUser = async (req, res) => {
     try {
         const { id_user, name_user, user_room, phone_user, id_branch } = req.body;
         var id, name, phone = null;
-        if (id_user != '') id = await UserModel.findOne({id: {$regex: `^.*${id_user}.*$`, $options: 'i'}});
-        if (name_user != '') name = await UserModel.findOne({userName: {$regex: `^.*${name_user}.*$`, $options: 'i'}});
-        if (phone_user != '') phone = await UserModel.findOne({phone: {$regex: `^.*${phone_user}.*$`, $options: 'i'}});
-        
-        if (![id_user, name_user, user_room].includes('') && id === null && name === null && phone === null) {
+        if (id_user != '') id = await UserModel.findOne({ id: { $regex: `^.*${id_user}.*$`, $options: 'i' }, idBranch: id_branch });
+        if (name_user != '') name = await UserModel.findOne({ userName: { $regex: `^.*${name_user}.*$`, $options: 'i' }, idBranch: id_branch });
+        if (phone_user != '') phone = await UserModel.findOne({ phone: { $regex: `^.*${phone_user}.*$`, $options: 'i' }, idBranch: id_branch });
+
+        if (![id_user, name_user, user_room, phone_user].includes('') && id === null && name === null && phone === null) {
             const model = new UserModel();
             model.id = id_user;
             model.userName = name_user;
@@ -103,12 +103,12 @@ exports.addUser = async (req, res) => {
                 message: "Đã thêm thanh viên mới vào chi nhánh!",
                 payload: dataUser
             });
-        }else{
+        } else {
             var condition = { idBranch: id_branch };
-            if (id_user != '') condition['id'] = {$regex: `^.*${id_user}.*$`, $options: 'i'};
-            if (name_user != '') condition['userName'] = {$regex: `^.*${name_user}.*$`, $options: 'i'};
-            if (user_room != '') condition['roomNumber'] = {$regex: `^.*${user_room}.*$`, $options: 'i'};
-            if (phone_user != '') condition['phone'] = {$regex: `^.*${phone_user}.*$`, $options: 'i'};
+            if (id_user != '') condition['id'] = { $regex: `^.*${id_user}.*$`, $options: 'i' };
+            if (name_user != '') condition['userName'] = { $regex: `^.*${name_user}.*$`, $options: 'i' };
+            if (user_room != '') condition['roomNumber'] = { $regex: `^.*${user_room}.*$`, $options: 'i' };
+            if (phone_user != '') condition['phone'] = { $regex: `^.*${phone_user}.*$`, $options: 'i' };
             const dataUser = await UserModel.find(condition, { _id: 0, pass: 0 }).toArray();
             if (dataUser.length == 0) {
                 return res.json({
@@ -123,6 +123,52 @@ exports.addUser = async (req, res) => {
                     payload: dataUser
                 });
             }
+        }
+    } catch (err) {
+        console.log(err);
+        return res.json(Utils.dataErr);
+    }
+}
+
+exports.updateUser = async (req, res) => {
+    try {
+        const { id_user, name_user, phone_user, user_room, id_branch } = req.body;
+        let checkRoom = await UserModel.find({ roomNumber: user_room, idBranch: id_branch }).toArray();
+        if (checkRoom.length > 4) {
+            return res.json({
+                code: 501,
+                message: 'Số người ở trong một phòng vượt quá mức quy định.',
+                payload: null
+            });
+        } else if (checkRoom.length === 0) {
+            return res.json({
+                code: 400,
+                message: 'Số phòng không tồn tại.',
+                payload: null
+            });
+        } else {
+            var condition = [];
+            if (id_user != undefined) condition.push({ id: id_user });
+            if (name_user != undefined) condition.push({ userName: name_user });
+            let checkUser = await UserModel.findOne({ $or: condition, idBranch: id_branch });
+            if (checkUser != null) {
+                return res.json({
+                    code: 501,
+                    message: 'Thông tin đã tồn tại.',
+                    payload: null
+                });
+            }
+            const model = new UserModel();
+            if (id_user != undefined) model.id = id_user;
+            if (name_user != undefined) model.userName = name_user;
+            if (phone_user != undefined) model.phone = phone_user;
+            model.roomNumber = user_room;
+            await model.updateOne();
+            return res.json({
+                code: 0,
+                message: 'Cập nhập thông tin thành công!',
+                payload: null
+            });
         }
     } catch (err) {
         console.log(err);

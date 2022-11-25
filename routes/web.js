@@ -39,4 +39,7 @@ router.post('/login', controller.login);
 router.post('/forgot-pass', controller.forgotPass);
 router.post('/add-user', controller.addUser);
 
+//method PUT
+router.put('/update-user', controller.updateUser);
+
 module.exports = router;

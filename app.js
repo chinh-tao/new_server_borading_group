@@ -21,7 +21,7 @@ apps.use((req,res,next)=>{
     res.setHeader('Content-Security-Policy', 'upgrade-insecure-requests');
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Credentials', true);
-    res.setHeader('Access-Control-Allow-Headers', 'Origin,Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,locale');
+    res.setHeader('Access-Control-Allow-Headers', 'Origin,Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,locale,id_branch');
     res.setHeader('Access-Control-Allow-Methods','GET, POST, OPTIONS, PUT, PATCH, DELETE');
     next();
 });
@@ -30,6 +30,7 @@ apps.use('/mobi', mobiRoutes);
 apps.use('/web', webRoutes);
 
 apps.use((req,res, next)=>{
+    // req.headers['access-control-expose-headers']
    return res.status(400).render('404');
 });
 

@@ -31,14 +31,26 @@ class UserModel {
 
     updateOne(){
         var form = {};
+        if(this.id){
+            form['id'] = this.id;
+        }
         if(this.email){
             form['email'] = this.email;
+        }
+        if(this.phone){
+            form['phone'] = this.phone;
+        }
+        if(this.userName){
+            form['userName'] = this.userName;
         }
         if(this.pass){
             form['pass'] = this.pass;
         }
         if(this.images){
             form['images'] = this.images;
+        }
+        if(this.roomNumber){
+            form['roomNumber'] = this.roomNumber;
         }
         if(this.deviceMobi){
             form['deviceMobi'] = this.deviceMobi;
