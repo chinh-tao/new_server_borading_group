@@ -399,7 +399,7 @@ exports.payment = async (req, res) => {
 
 exports.roomIncident = async (req, res) => {
     try {
-        const { title, date, level, user_name, room } = req.body;
+        const { title, date, level, user_name, room, content } = req.body;
         
         let branch = await checkBranch(req.headers['id_branch']);
         if (branch === false) {
@@ -424,6 +424,7 @@ exports.roomIncident = async (req, res) => {
         model.level = level;
         model.userName = user_name;
         model.roomNumber = room;
+        model.content = content;
         model.status = 0;
         model.idBranch = req.headers['id_branch'];
         await model.insertIncident();

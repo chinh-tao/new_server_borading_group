@@ -2,13 +2,14 @@ const client = require('../common/database').client;
 const db = client.db();
 
 class IncidentModel{
-    constructor(title, date, level, userName, roomNumber, status, idBranch) {
+    constructor(title, date, level, userName, roomNumber, status, content, idBranch) {
         this.title = title;
         this.date = date;
         this.userName = userName;
         this.level = level;
         this.roomNumber = roomNumber;
         this.status = status;
+        this.content = content;
         this.idBranch = idBranch;
     }
 
