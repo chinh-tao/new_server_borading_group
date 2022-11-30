@@ -181,6 +181,17 @@ exports.updateUser = async (req, res) => {
                 payload: null
             });
         }
+
+        if(email != undefined){
+            let checkEmail = await UserModel.findOne({ email: email });
+            if(checkEmail != null){
+                return res.json({
+                    code: 501,
+                    message: 'Cập nhập không thành công. Đã có tài khoản sử dụng email này.',
+                    payload: null
+                });
+            }
+        }
         const model = new UserModel();
         if(old_pass != undefined) model.pass = new_pass;
         if(email != undefined) model.email = email;
