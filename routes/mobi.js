@@ -18,8 +18,7 @@ router.get('/list-incident', userController.listIncident);
 router.get('/list-notice', userController.listNotice);
 
 //method PUT
-router.put('/change-email', userController.changeMail);
-router.put('/change-pass', userController.changePass);
+router.put('/update-user', userController.updateUser);
 router.put('/forgot-pass', userController.forgotPass);
 
 //method DELETE

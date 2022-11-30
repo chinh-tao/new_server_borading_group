@@ -162,62 +162,29 @@ exports.checkDevice = async (req, res) => {
     });
 };
 
-exports.changePass = async (req, res) => {
-    const { old_pass, new_pass, id } = req.body;
+exports.updateUser = async (req, res) => {
     try {
-        let checkPass = await UserModel.findOne({ id: id });
-        if (checkPass === null) {
+        const { email, old_pass, new_pass, phone, id } = req.body;
+        let checkUser = await UserModel.findOne({ id: id });
+        if (checkUser === null) {
             return res.json({
                 code: 400,
                 message: "Người dùng không tồn tại.",
                 payload: null
             });
-        } else if (checkPass.pass != old_pass) {
+        }
+
+        if (old_pass != undefined && checkUser.pass != old_pass) {
             return res.json({
                 code: 400,
                 message: "Mật khẩu cũ không chính xác.",
                 payload: null
             });
-        } else {
-            const model = new UserModel();
-            model.pass = new_pass;
-            model.id = id;
-            model.updateOne();
-            return res.json({
-                code: 0,
-                message: "Cập nhập thông tin thành công!",
-                payload: null
-            });
         }
-    } catch (err) {
-        console.log(err);
-        return res.json(Utils.dataErr);
-    }
-};
-
-exports.changeMail = async (req, res) => {
-    const { email, id } = req.body;
-    try {
-        let checkAcc = await UserModel.findOne({ id: id });
-        if (checkAcc === null) {
-            return res.json({
-                code: 400,
-                message: "Người dùng không tồn tại.",
-                payload: null
-            });
-        }
-
-        let checkEmail = await UserModel.findOne({ email: email });
-        if (checkEmail === null) {
-            return res.json({
-                code: 400,
-                message: "Tài khoản email đã tồn tại.",
-                payload: null
-            });
-        }
-
         const model = new UserModel();
-        model.email = email;
+        if(old_pass != undefined) model.pass = new_pass;
+        if(email != undefined) model.email = email;
+        if(phone != undefined) model.phone = phone;
         model.id = id;
         model.updateOne();
         return res.json({
@@ -362,16 +329,16 @@ exports.getBill = async (req, res) => {
 exports.payment = async (req, res) => {
     try {
         const { name, category, date, images, id } = req.body;
-        
+
         let result = await InvoiceModel.findOne({ _id: ObjectId(id) });
-        if(result === null){
+        if (result === null) {
             return res.json({
                 code: 400,
                 message: "Không tìm thấy hoá đơn phù hợp với yêu cầu.",
                 payload: null
             });
         }
-        
+
         var form = { name: name, category: category, date: date, status: 0 };
         const model = new InvoiceModel();
         model.id = new ObjectId(id);
@@ -400,7 +367,7 @@ exports.payment = async (req, res) => {
 exports.roomIncident = async (req, res) => {
     try {
         const { title, date, level, user_name, room, content } = req.body;
-        
+
         let branch = await checkBranch(req.headers['id_branch']);
         if (branch === false) {
             return res.json({
@@ -409,9 +376,9 @@ exports.roomIncident = async (req, res) => {
                 payload: null
             });
         }
-        
-        let checkUser = await UserModel.findOne({userName: user_name, roomNumber: room});
-        if(checkUser === null){
+
+        let checkUser = await UserModel.findOne({ userName: user_name, roomNumber: room });
+        if (checkUser === null) {
             return res.json({
                 code: 400,
                 message: 'Thông tin người dùng không chính xác.',
