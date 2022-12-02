@@ -164,17 +164,17 @@ exports.checkDevice = async (req, res) => {
 
 exports.updateUser = async (req, res) => {
     try {
-        const { email, old_pass, new_pass, phone, id } = req.body;
+        let time = new Date();
+        const { email, old_pass, new_pass, phone, id, images } = req.body;
         let checkUser = await UserModel.findOne({ id: id });
+
         if (checkUser === null) {
             return res.json({
                 code: 400,
                 message: "Người dùng không tồn tại.",
                 payload: null
             });
-        }
-
-        if (old_pass != undefined && checkUser.pass != old_pass) {
+        }else if (old_pass != undefined && checkUser.pass != old_pass) {
             return res.json({
                 code: 400,
                 message: "Mật khẩu cũ không chính xác.",
@@ -196,8 +196,14 @@ exports.updateUser = async (req, res) => {
         if(old_pass != undefined) model.pass = new_pass;
         if(email != undefined) model.email = email;
         if(phone != undefined) model.phone = phone;
+        if (images != undefined) {
+            const second = time.getMilliseconds();
+            const filed = await Utils.saveImage(`update_${id}_${second}`, images);
+            model.images = await Utils.urlImage(filed[0].metadata.name);
+            fs.unlinkSync(`upload/update_${id}_${second}.${images.type}`);
+        }
         model.id = id;
-        model.updateOne();
+        await model.updateOne();
         return res.json({
             code: 0,
             message: "Cập nhập thông tin thành công!",
