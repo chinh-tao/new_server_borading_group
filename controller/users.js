@@ -437,7 +437,7 @@ exports.listIncident = async (req, res) => {
         var condition = { roomNumber: room, idBranch: req.headers['id_branch'] };
         if (user_name != undefined) condition['userName'] = { $regex: `^.*${user_name}.*$`, $options: 'i' };
         if (level != undefined) condition['level'] = { $regex: `^.*${level}.*$`, $options: 'i' };
-        if (status != undefined) condition['status'] = status;
+        if (status != undefined) condition['status'] = parseInt(status);
         if (date != undefined) condition['date'] = date;
 
         let result = await IncidentModel.find(condition, { _id: 0, idBranch: 0 }).toArray();
